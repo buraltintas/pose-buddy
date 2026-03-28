@@ -117,7 +117,9 @@ export class SettingsScene extends BaseScene {
     createButton(this, centerX, baseY, {
       width: rowWidth,
       height: 58,
-      label: `${this.ctx.i18n.t('settings.music')}: ${this.onOff(this.ctx.progress.getSetting('musicEnabled'))}`,
+      label: `${this.ctx.i18n.t('settings.music')}: ${this.onOff(
+        this.ctx.progress.getSetting('musicEnabled'),
+      )}`,
       background: Theme.palette.ink,
       onPress: () => {
         const next = !this.ctx.progress.getSetting('musicEnabled');
@@ -130,7 +132,9 @@ export class SettingsScene extends BaseScene {
     createButton(this, centerX, baseY + 74, {
       width: rowWidth,
       height: 58,
-      label: `${this.ctx.i18n.t('settings.mockAds')}: ${this.onOff(this.ctx.progress.getSetting('mockAdsEnabled'))}`,
+      label: `${this.ctx.i18n.t('settings.mockAds')}: ${this.onOff(
+        this.ctx.progress.getSetting('mockAdsEnabled'),
+      )}`,
       background: Theme.palette.softInk,
       onPress: () => {
         const next = !this.ctx.progress.getSetting('mockAdsEnabled');
@@ -142,7 +146,9 @@ export class SettingsScene extends BaseScene {
     createButton(this, centerX, baseY + 148, {
       width: rowWidth,
       height: 58,
-      label: `${this.ctx.i18n.t('settings.reminders')}: ${this.onOff(this.ctx.progress.getSetting('remindersEnabled'))}`,
+      label: `${this.ctx.i18n.t('settings.reminders')}: ${this.onOff(
+        this.ctx.progress.getSetting('remindersEnabled'),
+      )}`,
       background: 0x6f8c68,
       onPress: () => {
         const next = !this.ctx.progress.getSetting('remindersEnabled');

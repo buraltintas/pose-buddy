@@ -219,7 +219,14 @@ function applyStaticVariation(
 
   return {
     hip: { x: 0, y: 0 },
-    neck: jitterPoint(pose.neck, levelId, 1, amp * 0.45, amp * 0.35, globalLean),
+    neck: jitterPoint(
+      pose.neck,
+      levelId,
+      1,
+      amp * 0.45,
+      amp * 0.35,
+      globalLean,
+    ),
     head: jitterPoint(pose.head, levelId, 2, amp * 0.5, amp * 0.4, globalLean),
     leftElbow: jitterPoint(
       pose.leftElbow,

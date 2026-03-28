@@ -54,12 +54,17 @@ export class PoseLibraryScene extends BaseScene {
     this.backButton.setPosition(header.leftX, header.y);
 
     this.titleText = this.add
-      .text(this.layout.width * 0.5, header.y, this.ctx.i18n.t('common.poseLibrary'), {
-        fontFamily: Theme.font,
-        fontSize: '38px',
-        fontStyle: '700',
-        color: '#27465c',
-      })
+      .text(
+        this.layout.width * 0.5,
+        header.y,
+        this.ctx.i18n.t('common.poseLibrary'),
+        {
+          fontFamily: Theme.font,
+          fontSize: '38px',
+          fontStyle: '700',
+          color: '#27465c',
+        },
+      )
       .setOrigin(0.5);
     this.titleText.setWordWrapWidth(
       this.layout.width - this.layout.safePadding * 2 - 110,
@@ -111,12 +116,17 @@ export class PoseLibraryScene extends BaseScene {
       bg.strokeRoundedRect(0, 0, width, height, 18);
 
       const label = this.add
-        .text(width * 0.5, 22, this.ctx.i18n.t('common.level', { id: level.id }), {
-          fontFamily: Theme.font,
-          fontSize: '20px',
-          color: '#2d4e64',
-          fontStyle: '700',
-        })
+        .text(
+          width * 0.5,
+          22,
+          this.ctx.i18n.t('common.level', { id: level.id }),
+          {
+            fontFamily: Theme.font,
+            fontSize: '20px',
+            color: '#2d4e64',
+            fontStyle: '700',
+          },
+        )
         .setOrigin(0.5);
 
       const silhouette = this.add.graphics();

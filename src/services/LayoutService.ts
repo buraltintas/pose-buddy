@@ -10,6 +10,11 @@ export interface PortraitLayout {
   height: number;
   safePadding: number;
   safeTop: number;
+  safeBottom: number;
+  safeInsetTop: number;
+  safeInsetRight: number;
+  safeInsetBottom: number;
+  safeInsetLeft: number;
   headerRow1Y: number;
   headerRow2Y: number;
   topArea: Rect;
@@ -28,12 +33,16 @@ export class LayoutService {
     width: number,
     height: number,
   ): PortraitLayout {
+    const insets = getSafeAreaInsets();
     const minSide = Math.min(width, height);
-    const safePadding = clamp(minSide * 0.042, 12, 24);
-    const safeTop = safePadding + clamp(height * 0.025, 14, 30);
+    const edgePadding = clamp(minSide * 0.042, 12, 24);
+    const horizontalInset = Math.max(insets.left, insets.right);
+    const safePadding = edgePadding + horizontalInset;
+    const safeTop = insets.top + edgePadding + clamp(height * 0.012, 8, 16);
+    const safeBottom = insets.bottom + edgePadding;
     const isPortrait = height >= width;
 
-    const usableHeight = height - safeTop - safePadding;
+    const usableHeight = height - safeTop - safeBottom;
     const compactness = clamp((height / Math.max(width, 1) - 1.6) / 1.2, 0, 1);
 
     const headerRatio = 0.12 - compactness * 0.01;
@@ -47,7 +56,7 @@ export class LayoutService {
 
     const topAreaY = safeTop + headerHeight;
     const boardY = topAreaY + topHeight + verticalGap;
-    const bottomY = height - bottomHeight - safePadding;
+    const bottomY = height - bottomHeight - safeBottom;
     const boardHeight = Math.max(88, bottomY - boardY - verticalGap);
 
     return {
@@ -55,6 +64,11 @@ export class LayoutService {
       height,
       safePadding,
       safeTop,
+      safeBottom,
+      safeInsetTop: insets.top,
+      safeInsetRight: insets.right,
+      safeInsetBottom: insets.bottom,
+      safeInsetLeft: insets.left,
       isPortrait,
       headerRow1Y: safeTop,
       headerRow2Y: safeTop + clamp(headerHeight * 0.48, 34, 48),
@@ -92,7 +106,7 @@ export class LayoutService {
 
     const titleY = layout.safeTop + clamp(layout.height * 0.018, 18, 26);
     const contentTop = titleY + clamp(layout.height * 0.092, 76, 108);
-    const contentBottom = layout.height - layout.safePadding;
+    const contentBottom = layout.height - layout.safeBottom;
 
     return {
       titleY,
@@ -104,6 +118,38 @@ export class LayoutService {
       },
     };
   }
+}
+
+interface SafeAreaInsets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+function getSafeAreaInsets(): SafeAreaInsets {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return { top: 0, right: 0, bottom: 0, left: 0 };
+  }
+
+  const style = window.getComputedStyle(document.documentElement);
+
+  return {
+    top: parsePx(style.getPropertyValue('--safe-area-inset-top')),
+    right: parsePx(style.getPropertyValue('--safe-area-inset-right')),
+    bottom: parsePx(style.getPropertyValue('--safe-area-inset-bottom')),
+    left: parsePx(style.getPropertyValue('--safe-area-inset-left')),
+  };
+}
+
+function parsePx(raw: string): number {
+  const normalized = raw.trim().replace('px', '');
+  const value = Number(normalized);
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+
+  return Math.max(0, value);
 }
 
 function clamp(value: number, min: number, max: number): number {

@@ -150,9 +150,12 @@ export class LocalNotificationService implements NotificationService {
         this.log('App opened from external source/notification');
       });
 
-      await LocalNotifications.addListener('localNotificationActionPerformed', () => {
-        this.log('Local notification tapped');
-      });
+      await LocalNotifications.addListener(
+        'localNotificationActionPerformed',
+        () => {
+          this.log('Local notification tapped');
+        },
+      );
 
       if (Capacitor.getPlatform() === 'android') {
         await LocalNotifications.createChannel({
