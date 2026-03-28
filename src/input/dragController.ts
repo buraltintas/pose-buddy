@@ -9,7 +9,6 @@ interface DragCallbacks {
 
 type DragManipulator =
   | { key: 'head'; joint: JointName }
-  | { key: 'neck'; joint: JointName }
   | { key: 'hand'; side: Side; joint: JointName }
   | { key: 'foot'; side: Side; joint: JointName }
   | { key: 'lowerArm'; side: Side; joint: JointName }
@@ -223,16 +222,6 @@ export class DragController {
           b: pose.neck,
           manipulator: { key: 'head', joint: 'head' },
         },
-        {
-          a: pose.neck,
-          b: limb.chestHub,
-          manipulator: { key: 'neck', joint: 'neck' },
-        },
-        {
-          a: limb.chestHub,
-          b: pose.hip,
-          manipulator: { key: 'neck', joint: 'neck' },
-        },
       ],
       0,
       1,
@@ -294,9 +283,6 @@ export class DragController {
         break;
       case 'head':
         this.rig.dragJoint('head', pointer);
-        break;
-      case 'neck':
-        this.rig.dragJoint('neck', pointer);
         break;
       default:
         break;

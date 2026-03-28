@@ -47,6 +47,7 @@ export class BootScene extends Phaser.Scene {
 
     try {
       await notifications.initialize();
+      await notifications.ensureInitialPermissionChoice();
       await notifications.refreshReminderSchedule();
     } catch {
       // Notifications are optional at runtime; gameplay should continue if init fails.

@@ -106,7 +106,7 @@ export class LocalNotificationService implements NotificationService {
       return true;
     }
 
-    const allowed = await this.ensurePermission();
+    const allowed = await this.ensurePermission({ openSettingsOnDeny: true });
     if (!allowed) {
       this.log('Notification permission denied while enabling reminders');
       this.progress.setSetting('remindersEnabled', false);
@@ -136,6 +136,32 @@ export class LocalNotificationService implements NotificationService {
       notifications: ids.map((id) => ({ id })),
     });
     this.log('Cancelled Pose Buddy reminders', { count: ids.length });
+  }
+
+  public async ensureInitialPermissionChoice(): Promise<void> {
+    if (!this.isNativeMobile()) {
+      this.progress.setSetting('notificationPermissionHandled', true);
+      return;
+    }
+
+    await this.initialize();
+
+    if (this.progress.getSetting('notificationPermissionHandled')) {
+      return;
+    }
+
+    const allowed = await this.ensurePermission();
+    this.progress.setSetting('notificationPermissionHandled', true);
+    this.progress.setSetting('remindersEnabled', allowed);
+
+    if (!allowed) {
+      await this.cancelPoseBuddyReminders();
+      this.log('Initial notification permission denied');
+      return;
+    }
+
+    await this.scheduleRollingReminders();
+    this.log('Initial notification permission granted; reminders enabled');
   }
 
   private async initializeInternal(): Promise<void> {
@@ -177,14 +203,35 @@ export class LocalNotificationService implements NotificationService {
     }
   }
 
-  private async ensurePermission(): Promise<boolean> {
+  private async ensurePermission(options?: {
+    openSettingsOnDeny?: boolean;
+  }): Promise<boolean> {
     const current = await LocalNotifications.checkPermissions();
     if (current.display === 'granted') {
       return true;
     }
 
     const requested = await LocalNotifications.requestPermissions();
-    return requested.display === 'granted';
+    const granted = requested.display === 'granted';
+
+    if (!granted && options?.openSettingsOnDeny) {
+      await this.openAppSettings();
+    }
+
+    return granted;
+  }
+
+  private async openAppSettings(): Promise<void> {
+    try {
+      if (Capacitor.getPlatform() === 'ios') {
+        window.location.href = 'app-settings:';
+      } else {
+        this.log('Open settings fallback is only implemented for iOS');
+      }
+      this.log('Opened system settings for notification permission');
+    } catch (error) {
+      this.log('Failed to open system settings', error);
+    }
   }
 
   private async scheduleRollingReminders(): Promise<void> {

@@ -6,6 +6,10 @@ export class MockNotificationService implements NotificationService {
     this.log('Mock notifications initialized (web fallback)');
   }
 
+  public async ensureInitialPermissionChoice(): Promise<void> {
+    this.log('Mock initial notification permission flow skipped');
+  }
+
   public async refreshReminderSchedule(): Promise<void> {
     this.log('Skipping reminder scheduling in web fallback');
   }

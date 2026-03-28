@@ -7,6 +7,7 @@ export interface UserSettings {
   musicEnabled: boolean;
   remindersEnabled: boolean;
   reminderHour: number;
+  notificationPermissionHandled: boolean;
 }
 
 export interface ProgressState {
@@ -33,5 +34,6 @@ export const DEFAULT_PROGRESS: ProgressState = {
     musicEnabled: true,
     remindersEnabled: notificationConfig.defaultReminderEnabled,
     reminderHour: notificationConfig.defaultReminderHour,
+    notificationPermissionHandled: false,
   },
 };

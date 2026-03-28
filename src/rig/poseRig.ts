@@ -100,7 +100,7 @@ export class PoseRig {
         this.dragHip(target);
         break;
       case 'neck':
-        this.dragNeck(target);
+        this.dragNeck();
         break;
       case 'head':
         this.dragHead(target);
@@ -241,9 +241,8 @@ export class PoseRig {
     this.legs.right.foot = add(this.legs.right.foot, delta);
   }
 
-  private dragNeck(target: Point): void {
-    const torsoDir = normalize(sub(target, this.hip));
-    this.neck = add(this.hip, scale(torsoDir, this.settings.torsoLength));
+  private dragNeck(): void {
+    this.neck = { x: this.hip.x, y: this.hip.y - this.settings.torsoLength };
 
     const leftTarget = clonePoint(this.arms.left.hand);
     const rightTarget = clonePoint(this.arms.right.hand);
@@ -353,8 +352,7 @@ export class PoseRig {
   }
 
   private stabilize(): void {
-    const torsoDir = normalize(sub(this.neck, this.hip));
-    this.neck = add(this.hip, scale(torsoDir, this.settings.torsoLength));
+    this.neck = { x: this.hip.x, y: this.hip.y - this.settings.torsoLength };
 
     this.headDir = normalize(this.headDir);
 

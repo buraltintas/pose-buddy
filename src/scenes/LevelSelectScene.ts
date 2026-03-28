@@ -24,6 +24,9 @@ export class LevelSelectScene extends BaseScene {
   private dragStartY: number;
   private dragStartScrollY: number;
   private dragDistance: number;
+  private ignoreLevelInputUntilMs: number;
+  private hasSeenPointerRelease: boolean;
+  private readonly dragThreshold = 8;
 
   constructor(key: string) {
     super(key);
@@ -36,6 +39,8 @@ export class LevelSelectScene extends BaseScene {
     this.dragStartY = 0;
     this.dragStartScrollY = 0;
     this.dragDistance = 0;
+    this.ignoreLevelInputUntilMs = 0;
+    this.hasSeenPointerRelease = false;
   }
 
   create(): void {
@@ -83,6 +88,8 @@ export class LevelSelectScene extends BaseScene {
     );
     this.gridViewport.setMask(this.gridMask);
     this.viewportRect = new Phaser.Geom.Rectangle(0, 0, 1, 1);
+    this.ignoreLevelInputUntilMs = this.time.now + 220;
+    this.hasSeenPointerRelease = false;
 
     this.renderLevelGrid();
     this.registerScrollInput();
@@ -103,7 +110,6 @@ export class LevelSelectScene extends BaseScene {
     const gridWidth = columns * tileWidth + (columns - 1) * gap;
     const viewportWidth = this.layout.width - this.layout.safePadding * 2;
     const startX = (viewportWidth - gridWidth) * 0.5;
-    const dragThreshold = 8;
     let maxBottom = 0;
 
     levels.forEach((level, index) => {
@@ -177,8 +183,37 @@ export class LevelSelectScene extends BaseScene {
         centered: false,
       });
 
-      hitArea.zone.on('pointerup', () => {
-        if (this.dragDistance > dragThreshold) {
+      let armedPointerId: number | null = null;
+
+      hitArea.zone.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+        if (
+          this.time.now < this.ignoreLevelInputUntilMs ||
+          !this.hasSeenPointerRelease
+        ) {
+          armedPointerId = null;
+          return;
+        }
+
+        armedPointerId = pointer.id;
+      });
+
+      hitArea.zone.on('pointerout', () => {
+        armedPointerId = null;
+      });
+
+      hitArea.zone.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+        const isArmedTap = armedPointerId === pointer.id;
+        armedPointerId = null;
+
+        if (
+          !isArmedTap ||
+          this.time.now < this.ignoreLevelInputUntilMs ||
+          !this.hasSeenPointerRelease
+        ) {
+          return;
+        }
+
+        if (this.dragDistance > this.dragThreshold) {
           return;
         }
         this.scene.start(SCENES.game, { levelId: level.id });
@@ -221,6 +256,7 @@ export class LevelSelectScene extends BaseScene {
     const stopDrag = () => {
       this.isDraggingScroll = false;
       this.activeScrollPointerId = null;
+      this.hasSeenPointerRelease = true;
     };
 
     this.input.on('pointerup', stopDrag);
