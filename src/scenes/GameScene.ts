@@ -365,7 +365,7 @@ export class GameScene extends BaseScene {
     if (!this.completionRecorded) {
       this.completionRecorded = true;
       this.ctx.progress.recordCompletion(this.level.id, score);
-      void this.showInterstitialToast();
+      void this.showInterstitialIfEligible();
       return;
     }
 
@@ -728,27 +728,10 @@ export class GameScene extends BaseScene {
     });
   }
 
-  private async showInterstitialToast(): Promise<void> {
-    const shown = await this.ctx.ads.showInterstitialIfEligible({
+  private async showInterstitialIfEligible(): Promise<void> {
+    await this.ctx.ads.showInterstitialIfEligible({
       levelId: this.level.id,
       completionCount: this.ctx.progress.getState().completionCount,
-    });
-    if (!shown) {
-      return;
-    }
-
-    this.adToastText.setText(this.ctx.i18n.t('ads.mockInterstitial'));
-    this.adToastText.setVisible(true);
-
-    this.tweens.add({
-      targets: this.adToastText,
-      alpha: { from: 1, to: 0 },
-      duration: 850,
-      yoyo: false,
-      onComplete: () => {
-        this.adToastText.setVisible(false);
-        this.adToastText.setAlpha(1);
-      },
     });
   }
 

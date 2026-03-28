@@ -64,8 +64,14 @@ export class AdMobAdService implements AdService {
 
     await this.initializeAds();
 
+    const adId = this.resolveAdUnit('interstitial');
+    if (!adId) {
+      this.interstitialReady = false;
+      this.log('Interstitial preload skipped: missing configured ad unit ID');
+      return;
+    }
+
     try {
-      const adId = this.resolveAdUnit('interstitial');
       await AdMob.prepareInterstitial({
         adId,
         isTesting: this.testMode,
@@ -141,8 +147,14 @@ export class AdMobAdService implements AdService {
 
     await this.initializeAds();
 
+    const adId = this.resolveAdUnit('rewarded');
+    if (!adId) {
+      this.rewardedReady = false;
+      this.log('Rewarded preload skipped: missing configured ad unit ID');
+      return;
+    }
+
     try {
-      const adId = this.resolveAdUnit('rewarded');
       await AdMob.prepareRewardVideoAd({
         adId,
         isTesting: this.testMode,
@@ -200,6 +212,11 @@ export class AdMobAdService implements AdService {
 
       await AdMob.initialize(options);
 
+      const appId = this.getConfiguredAppId();
+      if (!appId) {
+        this.log('Configured AdMob app ID is missing for this platform');
+      }
+
       await AdMob.addListener(InterstitialAdPluginEvents.Loaded, () => {
         this.interstitialReady = true;
       });
@@ -240,7 +257,12 @@ export class AdMobAdService implements AdService {
 
   private resolveAdUnit(kind: 'interstitial' | 'rewarded'): string {
     const platform = Capacitor.getPlatform() === 'ios' ? 'ios' : 'android';
-    return getEffectiveAdUnitId(platform, kind, this.testMode);
+    return getEffectiveAdUnitId(platform, kind);
+  }
+
+  private getConfiguredAppId(): string {
+    const platform = Capacitor.getPlatform() === 'ios' ? 'ios' : 'android';
+    return platform === 'ios' ? adsConfig.ios.appId : adsConfig.android.appId;
   }
 
   private isNativeMobile(): boolean {

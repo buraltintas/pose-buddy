@@ -1,4 +1,3 @@
-import type { ProgressService } from './ProgressService';
 import { adsConfig } from '../config/ads';
 import type { InterstitialRequestContext, AdService } from './AdService';
 
@@ -8,10 +7,8 @@ export class MockAdService implements AdService {
   private rewardedReady: boolean;
   private lastInterstitialAt: number;
   private testMode: boolean;
-  private progress: ProgressService;
 
-  constructor(progress: ProgressService) {
-    this.progress = progress;
+  constructor() {
     this.completionCounter = 0;
     this.interstitialReady = false;
     this.rewardedReady = false;
@@ -44,10 +41,6 @@ export class MockAdService implements AdService {
   public async showInterstitialIfEligible(
     context: InterstitialRequestContext = {},
   ): Promise<boolean> {
-    if (!this.progress.getSetting('mockAdsEnabled')) {
-      return false;
-    }
-
     const levelId = context.levelId ?? 0;
     if (levelId > 0 && levelId < adsConfig.cadence.skipInterstitialUntilLevel) {
       return false;
@@ -90,10 +83,6 @@ export class MockAdService implements AdService {
   }
 
   public async showRewarded(onReward?: () => void): Promise<boolean> {
-    if (!this.progress.getSetting('mockAdsEnabled')) {
-      return false;
-    }
-
     if (!adsConfig.enableRewarded) {
       return false;
     }

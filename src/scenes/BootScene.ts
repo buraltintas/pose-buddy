@@ -28,7 +28,7 @@ export class BootScene extends Phaser.Scene {
     const progress = new ProgressService(new BrowserStorageAdapter());
     const levels = new LevelService();
     const i18n = new LocalizationService(progress);
-    const ads = createAdService(progress);
+    const ads = createAdService();
     const notifications = createNotificationService(progress, i18n);
     ads.setTestMode(adsConfig.testMode);
     const music = new MusicService(

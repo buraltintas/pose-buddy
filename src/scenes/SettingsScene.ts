@@ -87,7 +87,7 @@ export class SettingsScene extends BaseScene {
     const startY = this.page.content.y + 64;
     const stepY = 72;
 
-    languages.forEach((lang, index) => {
+    languages.forEach((lang: LanguageCode, index: number) => {
       const col = index % columns;
       const row = Math.floor(index / columns);
       const x =
@@ -113,8 +113,10 @@ export class SettingsScene extends BaseScene {
     const baseY = this.page.content.y + 64 + languageRows * 72 + 24;
     const rowWidth = this.page.content.width;
     const centerX = this.page.content.x + rowWidth * 0.5;
+    const rowGap = 74;
+    let rowIndex = 0;
 
-    createButton(this, centerX, baseY, {
+    createButton(this, centerX, baseY + rowIndex * rowGap, {
       width: rowWidth,
       height: 58,
       label: `${this.ctx.i18n.t('settings.music')}: ${this.onOff(
@@ -128,22 +130,9 @@ export class SettingsScene extends BaseScene {
         this.scene.restart();
       },
     });
+    rowIndex += 1;
 
-    createButton(this, centerX, baseY + 74, {
-      width: rowWidth,
-      height: 58,
-      label: `${this.ctx.i18n.t('settings.mockAds')}: ${this.onOff(
-        this.ctx.progress.getSetting('mockAdsEnabled'),
-      )}`,
-      background: Theme.palette.softInk,
-      onPress: () => {
-        const next = !this.ctx.progress.getSetting('mockAdsEnabled');
-        this.ctx.progress.setSetting('mockAdsEnabled', next);
-        this.scene.restart();
-      },
-    });
-
-    createButton(this, centerX, baseY + 148, {
+    createButton(this, centerX, baseY + rowIndex * rowGap, {
       width: rowWidth,
       height: 58,
       label: `${this.ctx.i18n.t('settings.reminders')}: ${this.onOff(
@@ -157,16 +146,20 @@ export class SettingsScene extends BaseScene {
           .finally(() => this.scene.restart());
       },
     });
+    rowIndex += 1;
+
+    const resetButtonY = baseY + rowIndex * rowGap;
+    const resetNoticeY = resetButtonY + 26;
 
     const resetNotice = this.add
-      .text(centerX, baseY + 248, '', {
+      .text(centerX, resetNoticeY, '', {
         fontFamily: Theme.font,
         fontSize: '20px',
         color: '#805433',
       })
       .setOrigin(0.5);
 
-    createButton(this, centerX, baseY + 222, {
+    createButton(this, centerX, resetButtonY, {
       width: rowWidth,
       height: 58,
       label: this.ctx.i18n.t('settings.resetProgress'),

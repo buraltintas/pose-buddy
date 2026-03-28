@@ -113,10 +113,10 @@ Ad startup/init safety:
 - browser/dev uses `MockAdService`
 - init/preload failures are non-fatal and do not block gameplay
 
-Test-ads safety:
+Native ads safety:
 
-- non-production defaults to test mode
-- missing production unit IDs fall back to Google test ad units
+- native runtime defaults to real ads (`VITE_ADS_NATIVE_TEST_MODE=0`)
+- no Google demo ad-unit fallback in native flow
 - optional test-device IDs can be set via `VITE_ADS_TEST_DEVICE_IDS`
 
 Monetization behavior preserved:
@@ -176,7 +176,7 @@ Ad placeholders:
 - `VITE_ANDROID_ADMOB_APP_ID`
 - `VITE_ANDROID_INTERSTITIAL_UNIT_ID`
 - `VITE_ANDROID_REWARDED_UNIT_ID`
-- `VITE_ADS_TEST_MODE`
+- `VITE_ADS_NATIVE_TEST_MODE`
 - `VITE_ADS_TEST_DEVICE_IDS`
 
 Notification defaults:
@@ -250,6 +250,6 @@ xcodebuild -runFirstLaunch
 
 4. For release ad rollout later:
 
-- replace test `GADApplicationIdentifier` in [ios/App/App/Info.plist](ios/App/App/Info.plist)
+- set real `GADApplicationIdentifier` in [ios/App/App/Info.plist](ios/App/App/Info.plist)
 - set production unit IDs in local `.env`
-- keep `VITE_ADS_TEST_MODE=1` during development and internal QA
+- keep `VITE_ADS_NATIVE_TEST_MODE=0` for real-ad device testing
