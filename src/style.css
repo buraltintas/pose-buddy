@@ -1,0 +1,22 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at 18% 22%, #faf4e6 0%, #efe8d9 100%);
+  font-family: 'Avenir Next', 'Trebuchet MS', sans-serif;
+  touch-action: none;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
